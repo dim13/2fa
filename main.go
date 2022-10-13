@@ -110,7 +110,7 @@ func (k *key) UnmarshalText(text []byte) error {
 }
 
 func keychain() ([]key, error) {
-	fd, err := os.Open(os.ExpandEnv("$HOME/.2fax"))
+	fd, err := os.OpenFile(os.ExpandEnv("$HOME/.2fa"), os.O_RDONLY|os.O_CREATE, 0600)
 	if err != nil {
 		return nil, err
 	}
