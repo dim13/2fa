@@ -61,6 +61,8 @@ func (k *key) UnmarshalText(text []byte) error {
 		k.otp = k.totp
 	case "hotp":
 		k.otp = k.hotp
+	default:
+		k.otp = k.totp
 	}
 	k.name = strings.TrimPrefix(u.Path, "/")
 	switch strings.ToUpper(q.Get("algorithm")) {
@@ -72,18 +74,33 @@ func (k *key) UnmarshalText(text []byte) error {
 		k.alg = sha512.New
 	case "MD5":
 		k.alg = md5.New
+	default:
+		k.alg = sha1.New
 	}
-	digits, err := strconv.ParseInt(q.Get("digits"), 10, 0)
-	if err != nil {
-		return err
+	k.digits = 6
+	if v := q.Get("digits"); v != "" {
+		digits, err := strconv.ParseInt(v, 10, 0)
+		if err != nil {
+			return err
+		}
+		k.digits = int(digits)
 	}
-	k.digits = int(digits)
 	k.issuer = q.Get("issuer")
-	period, err := strconv.ParseInt(q.Get("period"), 10, 0)
-	if err != nil {
-		return err
+	if v := q.Get("counter"); v != "" {
+		counter, err := strconv.ParseInt(v, 10, 0)
+		if err != nil {
+			return err
+		}
+		k.counter = uint64(counter)
 	}
-	k.period = uint64(period)
+	k.period = 30
+	if v := q.Get("period"); v != "" {
+		period, err := strconv.ParseInt(v, 10, 0)
+		if err != nil {
+			return err
+		}
+		k.period = uint64(period)
+	}
 	secret, err := base32.StdEncoding.WithPadding(base32.NoPadding).DecodeString(q.Get("secret"))
 	if err != nil {
 		return fmt.Errorf("%s: %w", q.Get("secret"), err)
