@@ -41,6 +41,10 @@ func (k *key) hotp() uint64 {
 	return k.counter
 }
 
+func (k *key) left() time.Duration {
+	return time.Second * time.Duration(k.period-uint64(time.Now().Second())%k.period)
+}
+
 func (k *key) eval() int {
 	h := hmac.New(k.alg, k.secret)
 	binary.Write(h, binary.BigEndian, k.otp())
@@ -141,6 +145,6 @@ func main() {
 				continue
 			}
 		}
-		fmt.Fprintf(w, "%0*d\t%s\t%s\n", v.digits, v.eval(), v.issuer, v.name)
+		fmt.Fprintf(w, "%0*d\t%s\t%s\t%v\n", v.digits, v.eval(), v.issuer, v.name, v.left())
 	}
 }
