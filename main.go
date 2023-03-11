@@ -35,15 +35,13 @@ func keychain(fname string) ([]key, error) {
 	s := bufio.NewScanner(fd)
 	var keys []key
 	for s.Scan() {
-		// skip comments
-		if strings.HasPrefix(s.Text(), "#") {
-			continue
+		if strings.HasPrefix(s.Text(), "otpauth:") {
+			var k key
+			if err := k.UnmarshalText(s.Bytes()); err != nil {
+				return nil, err
+			}
+			keys = append(keys, k)
 		}
-		var k key
-		if err := k.UnmarshalText(s.Bytes()); err != nil {
-			return nil, err
-		}
-		keys = append(keys, k)
 	}
 	return keys, s.Err()
 }
