@@ -49,9 +49,8 @@ func keychain(fname string) ([]key, error) {
 }
 
 func main() {
-	// example: otpauth://totp/Example:alice@google.com?issuer=Example&secret=JBSWY3DPEHPK3PXP
 	chainFile := flag.String("file", os.ExpandEnv("$HOME/.2fa"), "keychain file")
-	add := flag.String("add", "", "add key")
+	add := flag.String("add", "", "add key (example: otpauth://totp/Example:alice@google.com?issuer=Example&secret=JBSWY3DPEHPK3PXP)")
 	flag.Parse()
 	if *add != "" {
 		if err := addKey(*chainFile, *add); err != nil {
