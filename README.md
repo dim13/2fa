@@ -2,14 +2,16 @@
 
 ## Usage
 
-Add key
+Add key:
 
     2fa -add otpauth://totp/Example:alice@google.com?issuer=Example&secret=JBSWY3DPEHPK3PXP
 
-Evaluate key
+Evaluate key:
 
     2fa
 
-Evaluate specific key
+Evaluate specific key:
 
     2fa example
+
+Remove key: edit `~/.2fa`
