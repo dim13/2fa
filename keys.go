@@ -18,28 +18,28 @@ import (
 
 type key struct {
 	name    string
-	otp     func() uint64
+	otp     func() int64
 	otpName string
 	alg     func() hash.Hash
 	algName string
 	digits  int
 	issuer  string
-	counter uint64
-	period  uint64
+	counter int64
+	period  int64
 	secret  []byte
 }
 
-func (k *key) totp() uint64 {
-	return uint64(time.Now().Unix()) / k.period
+func (k *key) totp() int64 {
+	return time.Now().Unix() / k.period
 }
 
-func (k *key) hotp() uint64 {
+func (k *key) hotp() int64 {
 	k.counter++ // pre-increment rfc4226 section 7.2.
 	return k.counter
 }
 
 func (k *key) left() time.Duration {
-	return time.Second * time.Duration(k.period-uint64(time.Now().Second())%k.period)
+	return time.Second * time.Duration(k.period-int64(time.Now().Second())%k.period)
 }
 
 var pow10tab = [...]int{
@@ -104,7 +104,7 @@ func (k *key) UnmarshalText(text []byte) error {
 		if err != nil {
 			return err
 		}
-		k.counter = uint64(counter)
+		k.counter = counter
 	}
 	k.period = 30
 	if v := q.Get("period"); v != "" {
@@ -112,7 +112,7 @@ func (k *key) UnmarshalText(text []byte) error {
 		if err != nil {
 			return err
 		}
-		k.period = uint64(period)
+		k.period = period
 	}
 	secret, err := base32.StdEncoding.WithPadding(base32.NoPadding).DecodeString(q.Get("secret"))
 	if err != nil {
