@@ -56,6 +56,8 @@ func (k *key) eval() int {
 	return int(result) % pow10tab[k.digits]
 }
 
+var b32 = base32.StdEncoding.WithPadding(base32.NoPadding)
+
 func (k *key) UnmarshalText(text []byte) error {
 	u, err := url.Parse(string(text))
 	if err != nil {
@@ -114,8 +116,7 @@ func (k *key) UnmarshalText(text []byte) error {
 		}
 		k.period = period
 	}
-	s := strings.ToUpper(q.Get("secret"))
-	secret, err := base32.StdEncoding.WithPadding(base32.NoPadding).DecodeString(s)
+	secret, err := b32.DecodeString(strings.ToUpper(q.Get("secret")))
 	if err != nil {
 		return fmt.Errorf("%s: %w", q.Get("secret"), err)
 	}
@@ -126,7 +127,7 @@ func (k *key) UnmarshalText(text []byte) error {
 func (k *key) URL() *url.URL {
 	v := make(url.Values)
 	// required
-	v.Add("secret", base32.StdEncoding.WithPadding(base32.NoPadding).EncodeToString(k.secret))
+	v.Add("secret", b32.EncodeToString(k.secret))
 	// strongly recommended
 	if k.issuer != "" {
 		v.Add("issuer", k.issuer)
