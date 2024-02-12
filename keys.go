@@ -114,7 +114,8 @@ func (k *key) UnmarshalText(text []byte) error {
 		}
 		k.period = period
 	}
-	secret, err := base32.StdEncoding.WithPadding(base32.NoPadding).DecodeString(q.Get("secret"))
+	s := strings.ToUpper(q.Get("secret"))
+	secret, err := base32.StdEncoding.WithPadding(base32.NoPadding).DecodeString(s)
 	if err != nil {
 		return fmt.Errorf("%s: %w", q.Get("secret"), err)
 	}
