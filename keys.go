@@ -10,6 +10,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"hash"
+	"io"
 	"net/url"
 	"strconv"
 	"strings"
@@ -154,4 +155,15 @@ func (k *key) URL() *url.URL {
 		Path:     k.name,
 		RawQuery: v.Encode(),
 	}
+}
+
+func (k *key) WriteTo(w io.Writer) {
+	fmt.Fprintf(w, "%0*d\t%s\t%s\t%v\n", k.digits, k.eval(), k.issuer, k.name, k.left())
+}
+
+func (k *key) match(s string) bool {
+	s = strings.ToLower(s)
+	issuer := strings.ToLower(k.issuer)
+	name := strings.ToLower(k.name)
+	return strings.Contains(issuer, s) || strings.Contains(name, s)
 }

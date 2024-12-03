@@ -62,13 +62,10 @@ func main() {
 	}
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
 	defer w.Flush()
-	for _, v := range keys {
-		if len(os.Args) > 1 {
-			s := strings.ToLower(os.Args[1])
-			if !strings.Contains(strings.ToLower(v.issuer), s) && !strings.Contains(strings.ToLower(v.name), s) {
-				continue
-			}
+	for _, k := range keys {
+		if len(os.Args) > 1 && !k.match(os.Args[1]) {
+			continue
 		}
-		fmt.Fprintf(w, "%0*d\t%s\t%s\t%v\n", v.digits, v.eval(), v.issuer, v.name, v.left())
+		k.WriteTo(w)
 	}
 }
