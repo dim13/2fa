@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 	"text/tabwriter"
 )
@@ -46,8 +47,16 @@ func keychain(fname string) ([]key, error) {
 	return keys, s.Err()
 }
 
+func homeDir(s string) string {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		panic(err)
+	}
+	return filepath.Join(home, s)
+}
+
 func main() {
-	chainFile := flag.String("file", os.ExpandEnv("$HOME/.2fa"), "keychain file")
+	chainFile := flag.String("file", homeDir(".2fa"), "keychain file")
 	add := flag.String("add", "", "add key (example: otpauth://totp/Example:alice@google.com?issuer=Example&secret=JBSWY3DPEHPK3PXP)")
 	flag.Parse()
 	if *add != "" {
