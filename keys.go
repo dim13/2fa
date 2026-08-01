@@ -157,8 +157,9 @@ func (k *key) URL() *url.URL {
 	}
 }
 
-func (k *key) WriteTo(w io.Writer) {
-	fmt.Fprintf(w, "%0*d\t%s\t%s\t%v\n", k.digits, k.eval(), k.issuer, k.name, k.left())
+func (k *key) WriteTo(w io.Writer) (int64, error) {
+	n, err := fmt.Fprintf(w, "%0*d\t%s\t%s\t%v\n", k.digits, k.eval(), k.issuer, k.name, k.left())
+	return int64(n), err
 }
 
 func (k *key) match(s string) bool {
