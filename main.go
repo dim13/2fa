@@ -72,9 +72,8 @@ func main() {
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
 	defer w.Flush()
 	for _, k := range keys {
-		if len(os.Args) > 1 && !k.match(os.Args[1]) {
-			continue
+		if k.match(flag.Args()...) {
+			k.WriteTo(w)
 		}
-		k.WriteTo(w)
 	}
 }

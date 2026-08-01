@@ -12,6 +12,7 @@ import (
 	"hash"
 	"io"
 	"net/url"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -162,9 +163,14 @@ func (k *key) WriteTo(w io.Writer) (int64, error) {
 	return int64(n), err
 }
 
-func (k *key) match(s string) bool {
-	s = strings.ToLower(s)
+func (k *key) match(s ...string) bool {
+	if len(s) == 0 {
+		return true
+	}
 	issuer := strings.ToLower(k.issuer)
 	name := strings.ToLower(k.name)
-	return strings.Contains(issuer, s) || strings.Contains(name, s)
+	return slices.ContainsFunc(s, func(v string) bool {
+		v = strings.ToLower(v)
+		return strings.Contains(issuer, v) || strings.Contains(name, v)
+	})
 }
